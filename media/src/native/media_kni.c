@@ -898,7 +898,9 @@ Java_org_joshvm_media_VADController_start0()
 #if ENABLE_PCSL
     javacall_result result = JAVACALL_FAIL;
 
-    result = javacall_media_vad_start();
+	int mode = KNI_GetParameterAsInt(1);
+
+    result = javacall_media_vad_start((javacall_media_vad_mode)mode);
     if (result != JAVACALL_OK) {
         KNI_ThrowNew(KNIIOException, "failed to start vad.");
     }

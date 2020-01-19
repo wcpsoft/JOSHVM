@@ -64,6 +64,12 @@ typedef struct {
     char desc[100]; // '\0' terminated string
 } javacall_media_word_info;
 
+typedef enum {
+	JAVACALL_MEDIA_VADMODE_INVALID = -1, //Invalid mode
+	JAVACALL_MEDIA_VADMODE_AUTO = 0,     //Auto mode, no voice command detection
+	JAVACALL_MEDIA_VADMODE_COMMAND = 1   //Command mode, with voice command detection
+} javacall_media_vad_mode;
+
 javacall_result javacall_media_open(int type, /*OUT*/ javacall_handle * handle);
 javacall_result javacall_media_close(javacall_handle handle);
 
@@ -109,7 +115,7 @@ javacall_result javacall_media_wakeup_enable(int enable);
 javacall_result javacall_media_wakeup_get_count(int* count);
 javacall_result javacall_media_wakeup_get_word(int pos, javacall_media_word_info* info);
 
-javacall_result javacall_media_vad_start();
+javacall_result javacall_media_vad_start(javacall_media_vad_mode mode);
 javacall_result javacall_media_vad_pause();
 javacall_result javacall_media_vad_resume();
 javacall_result javacall_media_vad_stop();

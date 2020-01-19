@@ -825,7 +825,7 @@ static void vad_callback(int state) {
     }
 }
 
-javacall_result javacall_media_vad_start() {
+javacall_result javacall_media_vad_start(javacall_media_vad_mode mode) {
     int result = joshvm_esp32_vad_start(vad_callback);
     return convertNativeResult(result);
 }

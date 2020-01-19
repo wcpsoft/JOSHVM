@@ -24,6 +24,7 @@ import org.joshvm.media.AudioRecorder;
 import org.joshvm.media.MediaPlayerListener;
 import org.joshvm.media.VADControllerListener;
 import org.joshvm.media.WakeUpListener;
+import org.joshvm.media.VADCommandControllerListener;
 
 import com.joshvm.media.MediaEventThread.MediaEvent;
 
@@ -62,7 +63,7 @@ public class EventListenerProxy {
 		setWakeUpListener(0, listener);
 	}
 
-	public interface VADControllerListenerExt extends VADControllerListener {
+	public interface VADControllerListenerExt extends VADControllerListener, VADCommandControllerListener {
 		public AudioRecorder getAudioRecorder();
 	}
 
@@ -75,6 +76,8 @@ public class EventListenerProxy {
 							listener.onVADBegin(listener.getAudioRecorder());
 						} else if (eventType == MediaEventThread.EVENT_VAD_END) {
 							listener.onVADEnd();
+						} else if (eventType == MediaEventThread.EVENT_VAD_COMMAND) {
+							listener.onVADCommand(event.intData, listener.getAudioRecorder());
 						}
 					}
 				});

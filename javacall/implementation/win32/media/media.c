@@ -164,7 +164,7 @@ javacall_result javacall_media_wakeup_get_word(int pos, javacall_media_word_info
     return JAVACALL_FAIL;
 }
 
-javacall_result javacall_media_vad_start() {
+javacall_result javacall_media_vad_start(javacall_media_vad_mode mode) {
     return JAVACALL_FAIL;
 }
 

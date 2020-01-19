@@ -34,6 +34,7 @@ class MediaEventThread extends Thread {
 	public static final int EVENT_WAKEUP = 1100;
 	public static final int EVENT_VAD_BEGIN = 1200;
 	public static final int EVENT_VAD_END = 1201;
+	public static final int EVENT_VAD_COMMAND = 1202;
 
 	private static MediaEventThread thread;
 	private Hashtable listeners = new Hashtable();

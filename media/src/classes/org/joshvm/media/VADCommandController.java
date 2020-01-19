@@ -24,24 +24,29 @@ import java.io.IOException;
 
 import com.joshvm.media.EventListenerProxy;
 import com.joshvm.media.VADAudioRecorder;
+import org.joshvm.util.ByteBuffer;
 import com.joshvm.media.VADControllerMode;
 
 /**
  * VADController provides access to vad control.
  */
-public class VADController {
-	private static final VADController INSTANCE = new VADController();
+public class VADCommandController {
+	private static final VADCommandController INSTANCE;
+	private static final VADController privVADController;
 	private AudioRecorder recorder;
-	private int vadMode;
+	
+	static {
+		INSTANCE = new VADCommandController();
+		privVADController = VADController.getInstance();
+	}
 
-	private VADController() {
-		vadMode = VADControllerMode.INVALID;
+	private VADCommandController() {
 	}
 
 	/**
 	 * Returns VADController instance
 	 */
-	public static VADController getInstance() {
+	public static VADCommandController getInstance() {
 		return INSTANCE;
 	}
 
@@ -51,7 +56,7 @@ public class VADController {
 	 * @param timeout vad off time in milliseconds
 	 */
 	public void setTimeout(int timeout) {
-		setTimeout0(timeout);
+		privVADController.setTimeout(timeout);
 	}
 
 	/**
@@ -60,101 +65,53 @@ public class VADController {
 	 * 
 	 * @param listener the callback that will be run.
 	 */
-	public void setVADControllerListener(final VADControllerListener listener) {
-		EventListenerProxy
-				.setVADControllerListener(listener == null ? null : new EventListenerProxy.VADControllerListenerExt() {
-					private int commandID = VADCommandControllerListener.COMMAND_INVALID;
+	public void setVADCommandControllerListener(final VADCommandControllerListener listener) {
+		privVADController.setVADControllerListener(new VADControllerListener() {
 					public void onVADBegin(AudioRecorder audioRecorder) {
-						listener.onVADBegin(audioRecorder);
+						recorder = audioRecorder;
 					}
 
 					public void onVADEnd() {
-						if (vadMode == VADControllerMode.AUTO) {
-							listener.onVADEnd();
-						}
-					}
-
-					public AudioRecorder getAudioRecorder() {
-						return recorder;
-					}
-
-					public void onVADCommand(int command, AudioRecorder recorder) {
-						//NOTE: the pass-in recorder is not used here. In listener's onVADEnd, the recorder could be directly referenced
-						//See: VADCommandController.setVADCommandControllerListener()
-						commandID = command;
-						if (vadMode == VADControllerMode.COMMAND) {
-							listener.onVADEnd();
-						}
-					}
-
-					public int getVADCommand() {
-						return commandID;
+						listener.onVADCommand(listener.getVADCommand(), recorder);
 					}
 				});
 	}
 
 	/**
-	 * Starts vad controller.
+	 * Starts VAD Command Controller.
 	 * 
 	 * @throws IOException
 	 */
 	public void start() throws IOException {
-		if (recorder == null) {
-			try {
-				recorder = new VADAudioRecorder();
-			} catch (Exception e) {
-				throw new IOException("Failed to start VADController.");
-			}
-		}
-		
-		vadMode = VADControllerMode.getMode();
-		start0(vadMode);
-		VADControllerMode.setMode(VADControllerMode.AUTO);
+		VADControllerMode.setMode(VADControllerMode.COMMAND);
+		privVADController.start();
 	}
 
 	/**
-	 * Pauses vad controller.
+	 * Pauses VAD Command Controller.
 	 * 
 	 * @throws IOException
 	 */
 	public void pause() throws IOException {
-		pause0();
+		privVADController.pause();
 	}
 
 	/**
-	 * Resumes vad controller.
+	 * Resumes VAD Command Controller.
 	 * 
 	 * @throws IOException
 	 */
 	public void resume() throws IOException {
-		resume0();
+		privVADController.resume();
 	}
 
 	/**
-	 * Stops vad controller.
+	 * Stops VAD Command Controller.
 	 * 
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		stop0();
-		if (recorder != null) {
-			try {
-				recorder.release();
-			} catch (Exception e) {
-			}
-			recorder = null;
-		}
+		privVADController.stop();
 	}
-
-	private native void setTimeout0(int timeout);
-
-	private native void start0(int mode);
-
-	private native void pause0();
-
-	private native void resume0();
-
-	private native void stop0();
-
-	private native void finalize();
 }
+
