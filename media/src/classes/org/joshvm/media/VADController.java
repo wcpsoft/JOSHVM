@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import com.joshvm.media.EventListenerProxy;
 import com.joshvm.media.VADAudioRecorder;
-import com.joshvm.media.VADControllerMode;
 
 /**
  * VADController provides access to vad control.
@@ -32,10 +31,8 @@ import com.joshvm.media.VADControllerMode;
 public class VADController {
 	private static final VADController INSTANCE = new VADController();
 	private AudioRecorder recorder;
-	private int vadMode;
 
 	private VADController() {
-		vadMode = VADControllerMode.INVALID;
 	}
 
 	/**
@@ -61,34 +58,18 @@ public class VADController {
 	 * @param listener the callback that will be run.
 	 */
 	public void setVADControllerListener(final VADControllerListener listener) {
-		EventListenerProxy
-				.setVADControllerListener(listener == null ? null : new EventListenerProxy.VADControllerListenerExt() {
-					private int commandID = VADCommandControllerListener.COMMAND_INVALID;
+		EventListenerProxy.setVADControllerListener(
+				listener == null ? null : new EventListenerProxy.VADControllerListenerExtAdaptor() {
 					public void onVADBegin(AudioRecorder audioRecorder) {
 						listener.onVADBegin(audioRecorder);
 					}
 
 					public void onVADEnd() {
-						if (vadMode == VADControllerMode.AUTO) {
-							listener.onVADEnd();
-						}
+						listener.onVADEnd();
 					}
 
 					public AudioRecorder getAudioRecorder() {
 						return recorder;
-					}
-
-					public void onVADCommand(int command, AudioRecorder recorder) {
-						//NOTE: the pass-in recorder is not used here. In listener's onVADEnd, the recorder could be directly referenced
-						//See: VADCommandController.setVADCommandControllerListener()
-						commandID = command;
-						if (vadMode == VADControllerMode.COMMAND) {
-							listener.onVADEnd();
-						}
-					}
-
-					public int getVADCommand() {
-						return commandID;
 					}
 				});
 	}
@@ -106,10 +87,7 @@ public class VADController {
 				throw new IOException("Failed to start VADController.");
 			}
 		}
-		
-		vadMode = VADControllerMode.getMode();
-		start0(vadMode);
-		VADControllerMode.setMode(VADControllerMode.AUTO);
+		start0();
 	}
 
 	/**
@@ -148,7 +126,7 @@ public class VADController {
 
 	private native void setTimeout0(int timeout);
 
-	private native void start0(int mode);
+	private native void start0();
 
 	private native void pause0();
 

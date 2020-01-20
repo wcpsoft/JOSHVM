@@ -898,9 +898,7 @@ Java_org_joshvm_media_VADController_start0()
 #if ENABLE_PCSL
     javacall_result result = JAVACALL_FAIL;
 
-	int mode = KNI_GetParameterAsInt(1);
-
-    result = javacall_media_vad_start((javacall_media_vad_mode)mode);
+    result = javacall_media_vad_start(JAVACALL_MEDIA_VADMODE_AUTO);
     if (result != JAVACALL_OK) {
         KNI_ThrowNew(KNIIOException, "failed to start vad.");
     }
@@ -980,6 +978,22 @@ Java_org_joshvm_media_VADController_setTimeout0()
     result = javacall_media_vad_set_timeout(timeout);
     if (result != JAVACALL_OK) {
         // KNI_ThrowNew(KNIIOException, "failed to set vad timeout.");
+    }
+#endif
+
+    KNI_ReturnVoid();
+}
+
+KNIEXPORT
+KNI_RETURNTYPE_VOID
+Java_org_joshvm_media_VADCommandController_start0()
+{
+#if ENABLE_PCSL
+    javacall_result result = JAVACALL_FAIL;
+
+    result = javacall_media_vad_start(JAVACALL_MEDIA_VADMODE_COMMAND);
+    if (result != JAVACALL_OK) {
+        KNI_ThrowNew(KNIIOException, "failed to start vad (command mode).");
     }
 #endif
 

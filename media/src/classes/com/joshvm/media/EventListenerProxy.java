@@ -22,9 +22,9 @@ package com.joshvm.media;
 
 import org.joshvm.media.AudioRecorder;
 import org.joshvm.media.MediaPlayerListener;
+import org.joshvm.media.VADCommandControllerListener;
 import org.joshvm.media.VADControllerListener;
 import org.joshvm.media.WakeUpListener;
-import org.joshvm.media.VADCommandControllerListener;
 
 import com.joshvm.media.MediaEventThread.MediaEvent;
 
@@ -65,6 +65,17 @@ public class EventListenerProxy {
 
 	public interface VADControllerListenerExt extends VADControllerListener, VADCommandControllerListener {
 		public AudioRecorder getAudioRecorder();
+	}
+
+	public static abstract class VADControllerListenerExtAdaptor implements VADControllerListenerExt {
+		public void onVADBegin(AudioRecorder audioRecorder) {
+		}
+
+		public void onVADEnd() {
+		}
+
+		public void onVADCommand(int command, AudioRecorder recorder) {
+		}
 	}
 
 	public static void setVADControllerListener(int id, final VADControllerListenerExt listener) {

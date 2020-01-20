@@ -271,7 +271,7 @@ extern int joshvm_esp32_wakeup_get_word(int pos, int* index, char* wordbuf,
 extern int joshvm_esp32_wakeup_enable(void(*callback)(int));
 extern int joshvm_esp32_wakeup_disable();
 
-extern int joshvm_esp32_vad_start(void(*callback)(int));
+extern int joshvm_esp32_vad_start(int, void(*callback)(int, int));
 extern int joshvm_esp32_vad_pause();
 extern int joshvm_esp32_vad_resume();
 extern int joshvm_esp32_vad_stop();
@@ -817,16 +817,18 @@ javacall_result javacall_media_wakeup_get_word(int pos, javacall_media_word_info
     return convertNativeResult(result);
 }
 
-static void vad_callback(int state) {
+static void vad_callback(int state, int data) {
     if (state == JAVACALL_MEDIA_VAD_STATE_START) {
         set_media_event(JAVACALL_EVENT_MEDIA_VAD_BEGIN, 0, JAVACALL_OK);
     } else if (state == JAVACALL_MEDIA_VAD_STATE_STOP) {
         set_media_event(JAVACALL_EVENT_MEDIA_VAD_END, 0, JAVACALL_OK);
+    } else if (state == JAVACALL_MEDIA_VAD_STATE_COMMAND_DETECTED) {
+        set_media_event_with_userdata(JAVACALL_EVENT_MEDIA_VAD_COMMAND, 0, JAVACALL_OK, data);
     }
 }
 
 javacall_result javacall_media_vad_start(javacall_media_vad_mode mode) {
-    int result = joshvm_esp32_vad_start(vad_callback);
+    int result = joshvm_esp32_vad_start((int)mode, vad_callback);
     return convertNativeResult(result);
 }
 

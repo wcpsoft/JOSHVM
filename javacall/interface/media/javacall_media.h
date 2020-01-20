@@ -38,7 +38,8 @@ typedef enum {
     JAVACALL_EVENT_MEDIA_CLOSE = 1005,
     JAVACALL_EVENT_MEDIA_WAKEUP = 1100,
     JAVACALL_EVENT_MEDIA_VAD_BEGIN = 1200,
-    JAVACALL_EVENT_MEDIA_VAD_END = 1201
+    JAVACALL_EVENT_MEDIA_VAD_END = 1201,
+    JAVACALL_EVENT_MEDIA_VAD_COMMAND = 1202
 } javacall_media_event_type;
 
 typedef enum {
@@ -50,7 +51,8 @@ typedef enum {
 
 typedef enum {
     JAVACALL_MEDIA_VAD_STATE_START = 0,
-    JAVACALL_MEDIA_VAD_STATE_STOP = 1
+    JAVACALL_MEDIA_VAD_STATE_STOP = 1,
+    JAVACALL_MEDIA_VAD_STATE_COMMAND_DETECTED = 2
 } javacall_media_vad_state_type;
 
 typedef struct {

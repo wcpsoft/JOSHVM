@@ -24,94 +24,76 @@ import java.io.IOException;
 
 import com.joshvm.media.EventListenerProxy;
 import com.joshvm.media.VADAudioRecorder;
-import org.joshvm.util.ByteBuffer;
-import com.joshvm.media.VADControllerMode;
 
 /**
- * VADController provides access to vad control.
+ * VADCommandController provides access to vad command control.
  */
 public class VADCommandController {
 	private static final VADCommandController INSTANCE;
-	private static final VADController privVADController;
 	private AudioRecorder recorder;
-	
+
 	static {
 		INSTANCE = new VADCommandController();
-		privVADController = VADController.getInstance();
 	}
 
 	private VADCommandController() {
 	}
 
 	/**
-	 * Returns VADController instance
+	 * Returns VADCommandController instance
 	 */
 	public static VADCommandController getInstance() {
 		return INSTANCE;
 	}
 
 	/**
-	 * Set vad off time
-	 * 
-	 * @param timeout vad off time in milliseconds
-	 */
-	public void setTimeout(int timeout) {
-		privVADController.setTimeout(timeout);
-	}
-
-	/**
-	 * Register a callback to be invoked when native vad engine is in begin or
-	 * end state.
+	 * Register a callback to be invoked when native vad engine detected
+	 * command.
 	 * 
 	 * @param listener the callback that will be run.
 	 */
 	public void setVADCommandControllerListener(final VADCommandControllerListener listener) {
-		privVADController.setVADControllerListener(new VADControllerListener() {
-					public void onVADBegin(AudioRecorder audioRecorder) {
-						recorder = audioRecorder;
+		EventListenerProxy.setVADControllerListener(
+				listener == null ? null : new EventListenerProxy.VADControllerListenerExtAdaptor() {
+					public void onVADCommand(int command, AudioRecorder recorder) {
+						listener.onVADCommand(command, recorder);
 					}
 
-					public void onVADEnd() {
-						listener.onVADCommand(listener.getVADCommand(), recorder);
+					public AudioRecorder getAudioRecorder() {
+						return recorder;
 					}
 				});
 	}
 
 	/**
-	 * Starts VAD Command Controller.
+	 * Starts VAD Command Controller which will automatically stop after invoke
+	 * callback.
 	 * 
+	 * @see #setVADCommandControllerListener
 	 * @throws IOException
 	 */
 	public void start() throws IOException {
-		VADControllerMode.setMode(VADControllerMode.COMMAND);
-		privVADController.start();
+		if (recorder == null) {
+			try {
+				recorder = new VADAudioRecorder();
+			} catch (Exception e) {
+				throw new IOException("Failed to start VADCommandController.");
+			}
+		}
+		start0();
 	}
 
 	/**
-	 * Pauses VAD Command Controller.
+	 * Releases the native resources.
 	 * 
-	 * @throws IOException
+	 * @throws IOException if an I/O error occurs
 	 */
-	public void pause() throws IOException {
-		privVADController.pause();
+	public void release() throws IOException {
+		if (recorder != null) {
+			recorder.release();
+			recorder = null;
+		}
 	}
 
-	/**
-	 * Resumes VAD Command Controller.
-	 * 
-	 * @throws IOException
-	 */
-	public void resume() throws IOException {
-		privVADController.resume();
-	}
-
-	/**
-	 * Stops VAD Command Controller.
-	 * 
-	 * @throws IOException
-	 */
-	public void stop() throws IOException {
-		privVADController.stop();
-	}
+	private native void start0();
 }
-

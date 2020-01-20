@@ -21,14 +21,14 @@
 package org.joshvm.media;
 
 /**
- * Listener to receive VAD begin and end notifications.
+ * Listener to receive VAD command notifications.
  */
 public interface VADCommandControllerListener {
 
 	public final static int COMMAND_INVALID = -1;
 	public final static int COMMAND_SYSTEM = 0;
 	public final static int COMMAND_USER_DEFINED = 10000;
-	
+
 	/**
 	 * Called when native VAD engine has detected pre-defined command
 	 * 
@@ -36,11 +36,4 @@ public interface VADCommandControllerListener {
 	 * @param recorder The AudioRecorder object to get the raw audio data
 	 */
 	public void onVADCommand(int command, AudioRecorder recorder);
-
-	/**
-	 * Returns the pre-defined command ID which has been detected
-	 *
-	 */
-	public int getVADCommand();
 }
-
