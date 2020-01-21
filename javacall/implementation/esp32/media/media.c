@@ -823,7 +823,7 @@ static void vad_callback(int state, int data) {
     } else if (state == JAVACALL_MEDIA_VAD_STATE_STOP) {
         set_media_event(JAVACALL_EVENT_MEDIA_VAD_END, 0, JAVACALL_OK);
     } else if (state == JAVACALL_MEDIA_VAD_STATE_COMMAND_DETECTED) {
-        set_media_event_with_userdata(JAVACALL_EVENT_MEDIA_VAD_COMMAND, 0, JAVACALL_OK, data);
+        set_media_event_with_userdata(JAVACALL_EVENT_MEDIA_VAD_COMMAND, 1, JAVACALL_OK, data);
     }
 }
 

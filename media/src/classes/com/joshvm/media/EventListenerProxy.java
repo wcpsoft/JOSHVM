@@ -97,4 +97,8 @@ public class EventListenerProxy {
 	public static void setVADControllerListener(VADControllerListenerExt listener) {
 		setVADControllerListener(0, listener);
 	}
+
+	public static void setVADCommandControllerListener(VADControllerListenerExt listener) {
+		setVADControllerListener(1, listener);
+	}
 }

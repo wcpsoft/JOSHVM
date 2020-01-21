@@ -53,7 +53,7 @@ public class VADCommandController {
 	 * @param listener the callback that will be run.
 	 */
 	public void setVADCommandControllerListener(final VADCommandControllerListener listener) {
-		EventListenerProxy.setVADControllerListener(
+		EventListenerProxy.setVADCommandControllerListener(
 				listener == null ? null : new EventListenerProxy.VADControllerListenerExtAdaptor() {
 					public void onVADCommand(int command, AudioRecorder recorder) {
 						listener.onVADCommand(command, recorder);
