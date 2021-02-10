@@ -67,3 +67,4 @@ cldc/build/josh_api.jar
 sdk/lib/*.zip
 sdk/bin
 doc
+.idea/
